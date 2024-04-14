@@ -22,10 +22,10 @@ const RecipeSchema = new mongoose.Schema({
         required: true
     },
     userOwner: {
-        typeKey: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId, // Corrected 'type' field
         ref: "users",
         required: true
     },
 });
 
-export const RecipeModel = new mongoose.model("recipes", RecipeSchema);
+export const RecipeModel = mongoose.model("recipes", RecipeSchema);
