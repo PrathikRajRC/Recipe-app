@@ -1,18 +1,21 @@
 import React, { useState } from "react";
-// import axios from "axios";
-// import { useGetUserID } from "../hooks/useGetUserID";
-// import { useNavigate } from "react-router-dom";
-// import { useCookies } from "react-cookie";
+import axios from "axios";
+import { useGetUserID } from "../hooks/useGetUserID";
+import { useNavigate } from "react-router-dom";
 
 export const CreateRecipe = () => {
+    const userID = useGetUserID();
     const [recipe, setRecipe] = useState({
         name: "",
         ingredients: [],
         instructions: "",
-        imageURL: "",
+        imageUrl: "",
         cookingTime: 0,
-        userOwner: 0,
+        userOwner: userID,
     });
+
+    const navigate = useNavigate();
+
 
     const handleChange= (event) => {
         const {name, value} = event.target;
@@ -24,19 +27,30 @@ export const CreateRecipe = () => {
         const ingredients = recipe.ingredients;
         ingredients[idx] = value;
         setRecipe({...recipe,ingredients});
-        console.log(recipe.ingredients);
+        
     };
 
     const addIngredient = () => {
-        setRecipe({
-           ...recipe,
-            ingredients: [...recipe.ingredients, ""],
+        const ingredients = [...recipe.ingredients, ""];
+        setRecipe({ ...recipe, ingredients 
         });
+        
+    }
+
+    const onSubmit = async (event) => {
+        event.preventDefault();
+        try {
+            await axios.post("http://localhost:3001/recipes", recipe);
+            alert("Recipe Created!");
+            navigate("/");
+        } catch (err) {
+            console.error(err);
+        }
     }
     return ( 
         <div className="create-recipe"> 
             <h2> Create Recipe </h2>  
-            <form>
+            <form onSubmit={onSubmit}>
 
                 <label htmlFor="name">Name</label>
                 <input type="text" id="name" name="name" className="Field" onChange={handleChange}/>
@@ -63,13 +77,13 @@ export const CreateRecipe = () => {
                 <label htmlFor="instructions">instructions</label>
                 <textarea id="instructions" name="instructions"className="Field" onChange={handleChange} ></textarea>
 
-                <label htmlFor="imageURL">Image URL</label>
-                <input type="text" id="imageURL" name="imageURL"className="Field" onChange={handleChange}/>
+                <label htmlFor="imageUrl">Image URL</label>
+                <input type="text" id="imageUrl" name="imageUrl"className="Field" onChange={handleChange}/>
 
                 <label htmlFor="cookingTime">Cooking Time (minutes)</label>
                 <input type="number" id="cookingTime" name="cookingTime"className="Field" onChange={handleChange}/>
                 <br/>
-                <button type="submit" className="Submit" > Submit </button>
+                <button type="submit" className="Submit" > Create Recipe </button>
             </form>
         </div>
     );
